@@ -22,9 +22,9 @@ const AddToCart = ({ product }) => {
     if (res.ok) {
       const updated = await fetch(`http://localhost:8000/api/cart/${state.user.id}`).then(r => r.json());
       dispatch({ type: "SET_CART", payload: updated });
-      alert("Added to cart");
+      console.log("Added to cart");
     } else {
-      alert("Failed to add");
+      console.log("Failed to add");
     }
   };
 

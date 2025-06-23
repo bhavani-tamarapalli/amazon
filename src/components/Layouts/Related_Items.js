@@ -49,6 +49,8 @@
 //         </Box>
 //     );
 // };
+
+
 import React, { useState, useEffect } from "react";
 import { Box, Typography, CardMedia, Link } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -83,7 +85,6 @@ export const RelatedItems = () => {
                 {items.map((item) => (
                     <SwiperSlide
                         key={item.id}
-                        // RelatedItems.js
                         onClick={() => navigate(`/product/${item.product_id}`)}
 
 

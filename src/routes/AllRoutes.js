@@ -61,6 +61,7 @@ import { Home_Kitchen } from '../navbar/Home_Kitchen';
 import { Computers } from '../navbar/Computers';
 import { ProductDetails } from '../page/Product_details';
 import { CartPage } from '../page/cart/CartPage';
+import { CheckoutPage } from '../page/CheckoutPage';
 
 
 
@@ -69,7 +70,7 @@ export const AllRoutes = () => {
     <Routes>
       <Route path="/home" element={<HomePage />} />
       <Route path="/signin" element={<Signin />} />
-      <Route path="/cart" element={<CartPage />} /> 
+      <Route path="/cart" element={<CartPage />} />
       <Route path="/category/fresh" element={<Fresh />} />
       <Route path="/category/mx-player" element={<MxPlayer />} />
       <Route path="/category/sell" element={<Sell />} />
@@ -80,6 +81,7 @@ export const AllRoutes = () => {
       <Route path="/category/home-&-kitchen" element={<Home_Kitchen />} />
       <Route path="/category/computers" element={<Computers />} />
       <Route path="/product/:product_id" element={<ProductDetails />} />
+      <Route path='/checkout' element={<CheckoutPage />} />
     </Routes>
   );
 };
