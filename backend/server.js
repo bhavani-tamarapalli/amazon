@@ -821,43 +821,140 @@ app.get("/api/login", (req, res) => {
 });
 
 //cart
+// app.post("/api/cart", (req, res) => {
+//   const { user_id, product_name, price, image } = req.body;
+
+//   if (!user_id || !product_name || !price || !image)
+//     return res.status(400).json({ error: "Missing fields" });
+
+//   con.query(
+//     "SELECT * FROM cart_items WHERE user_id = ? AND product_name = ?",
+//     [user_id, product_name],
+//     (err, rows) => {
+//       if (err) return res.status(500).json({ error: err.message });
+
+//       if (rows.length) {
+//         // Update quantity if item exists
+//         con.query(
+//           "UPDATE cart_items SET quantity = quantity + 1 WHERE id = ?",
+//           [rows[0].id],
+//           err => {
+//             if (err) return res.status(500).json({ error: err.message });
+//             res.json({ message: "Quantity updated" });
+//           }
+//         );
+//       } else {
+//         // Insert new item with image
+//         const sql = "INSERT INTO cart_items (user_id, product_name, price, image) VALUES (?, ?, ?, ?)";
+//         con.query(sql, [user_id, product_name, price, image], err => {
+//           if (err) return res.status(500).json({ error: err.message });
+//           res.json({ message: "Item added" });
+//         });
+//       }
+//     }
+//   );
+// });
+
+// app.get("/api/cart/:userId", (req, res) => {
+//   const { userId } = req.params;
+//   con.query("SELECT * FROM cart_items WHERE user_id = ?", [userId], (err, results) => {
+//     if (err) return res.status(500).json({ error: err.message });
+//     res.json(results); // ✅ includes image now
+//   });
+// });
+
+
+// app.delete("/api/cart/:itemId", (req, res) => {
+//   con.query("DELETE FROM cart_items WHERE id = ?", [req.params.itemId], (err) => {
+//     if (err) return res.status(500).json({ error: err });
+//     res.json({ message: "Item removed" });
+//   });
+// });
+// Add to Cart - insert or update quantity
+
+// Add to Cart
+// Add to Cart
 app.post("/api/cart", (req, res) => {
-  const { user_id, product_name, price } = req.body;
-  if (!user_id || !product_name || !price)
+  const { user_id, product_name, price, image } = req.body;
+
+  if (!user_id || !product_name || !price || !image)
     return res.status(400).json({ error: "Missing fields" });
 
-  con.query("SELECT * FROM cart_items WHERE user_id = ? AND product_name = ?", [user_id, product_name], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
+  con.query(
+    "SELECT * FROM cart_items WHERE user_id = ? AND product_name = ?",
+    [user_id, product_name],
+    (err, rows) => {
+      if (err) return res.status(500).json({ error: err.message });
 
-    if (rows.length) {
-      // Update quantity
-      con.query("UPDATE cart_items SET quantity = quantity + 1 WHERE id = ?", [rows[0].id], err => {
+      if (rows.length) {
+        con.query(
+          "UPDATE cart_items SET quantity = quantity + 1 WHERE id = ?",
+          [rows[0].id],
+          err => {
+            if (err) return res.status(500).json({ error: err.message });
+
+            con.query("SELECT * FROM cart_items WHERE user_id = ?", [user_id], (err, results) => {
+              if (err) return res.status(500).json({ error: err.message });
+              res.json(results);
+            });
+          }
+        );
+      } else {
+        con.query(
+          "INSERT INTO cart_items (user_id, product_name, price, image, quantity) VALUES (?, ?, ?, ?, 1)",
+          [user_id, product_name, price, image],
+          err => {
+            if (err) return res.status(500).json({ error: err.message });
+
+            con.query("SELECT * FROM cart_items WHERE user_id = ?", [user_id], (err, results) => {
+              if (err) return res.status(500).json({ error: err.message });
+              res.json(results);
+            });
+          }
+        );
+      }
+    }
+  );
+});
+
+// Update Quantity
+app.put("/api/cart/update-quantity", (req, res) => {
+  const { user_id, item_id, quantity } = req.body;
+
+  if (!user_id || !item_id || quantity == null) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+
+  con.query(
+    "UPDATE cart_items SET quantity = ? WHERE user_id = ? AND id = ?",
+    [quantity, user_id, item_id],
+    err => {
+      if (err) return res.status(500).json({ error: err.message });
+
+      con.query("SELECT * FROM cart_items WHERE user_id = ?", [user_id], (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "Quantity updated" });
-      });
-    } else {
-      // New item
-      con.query("INSERT INTO cart_items (user_id, product_name, price) VALUES (?, ?, ?)", [user_id, product_name, price], err => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "Item added" });
+        res.json(results);
       });
     }
-  });
-});
-app.get("/api/cart/:userId", (req, res) => {
-  const { userId } = req.params;
-  con.query("SELECT * FROM cart_items WHERE user_id = ?", [userId], (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
-  });
+  );
 });
 
+// Delete item
+app.delete("/api/cart/:userId/:itemId", (req, res) => {
+  const { userId, itemId } = req.params;
 
-app.delete("/api/cart/:itemId", (req, res) => {
-  con.query("DELETE FROM cart_items WHERE id = ?", [req.params.itemId], (err) => {
-    if (err) return res.status(500).json({ error: err });
-    res.json({ message: "Item removed" });
-  });
+  con.query(
+    "DELETE FROM cart_items WHERE user_id = ? AND id = ?",
+    [userId, itemId],
+    err => {
+      if (err) return res.status(500).json({ error: err.message });
+
+      con.query("SELECT * FROM cart_items WHERE user_id = ?", [userId], (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(results);
+      });
+    }
+  );
 });
 
 

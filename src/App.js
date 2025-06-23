@@ -45,7 +45,37 @@
 // export default App;
 
 
-// src/App.js
+// // src/App.js
+// import './App.css';
+// import { Footer } from './components/Footer/Footer';
+// import { Header } from './components/Header/Header';
+// import { AllRoutes } from './routes/AllRoutes';
+// import { useLocation } from 'react-router-dom';
+// import { AuthProvider } from './context/AuthContext';
+// import { CartProvider } from './page/cart/CartContext';
+
+
+// function App() {
+//   const location = useLocation();
+//   const hideHeaderFooterPaths = ['/signin'];
+//   const HideHeaderFooter = hideHeaderFooterPaths.includes(location.pathname);
+
+//   return (
+//     <AuthProvider>
+//       <CartProvider>
+//         <div className="App">
+//           {!HideHeaderFooter && <Header />}
+//           <AllRoutes />
+//           {!HideHeaderFooter && <Footer />}
+//         </div>
+//       </CartProvider>
+//     </AuthProvider>
+//   );
+// }
+
+// export default App;
+
+
 import './App.css';
 import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header/Header';
